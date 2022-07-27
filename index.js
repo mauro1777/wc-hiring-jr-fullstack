@@ -39,46 +39,37 @@ $t.answer(1, async () => {
   // Your code goes here
   //console.log(source);
   let e;
-  let expen;
-  let inco;
-  let restaurant;//to save the amount of the category "Restaurants"
-  let Incom; //to save the amount of the category "Income"
-  let Grocer;//to save the amount of the category "Groceries"
-  let Ren;//to save the amount of the category "Rent"
-  let target={};
-
-  //Code to get the whole amount of expenses, incomes and the balance, to input in the object target
-  for (let i in e=_.filter(source,{type:'expense'})){
-    expen =_.sumBy(e,'amount'); 
-  }
-  for (let i in e=_.filter(source,{type:'income'})){
-    inco =_.sumBy(e,'amount'); 
-  }
-  target.balance=inco-expen;
-  target.income=inco;
-  target.expenses=expen;
-  target.byCategories={};
+  let target={
+    balance:0
+    }
   
 
-  //Code to get the whole amount of expenses, incomes and the balance, to input in the object  byCategories and later in the object target
-  let byCategories={}
-  for (let i in e=_.filter(source,{category:'Restaurants'})){
-    restaurant =_.sumBy(e,'amount'); 
-  }
-  for (let i in e=_.filter(source,{category:'Income'})){
-    Incom =_.sumBy(e,'amount'); 
-  }
-  for (let i in e=_.filter(source,{category:'Groceries'})){
-    Grocer =_.sumBy(e,'amount'); 
-  }
-  for (let i in e=_.filter(source,{category:'Rent'})){
-    Ren =_.sumBy(e,'amount'); 
-  }
-  target.byCategories.Restaurants=restaurant*-1;
-  target.byCategories.Income=Incom;
-  target.byCategories.Groceries=Grocer*-1;
-  target.byCategories.Rent=Ren*-1;
+  //Code to get the whole amount of expenses, incomes and the balance, to input in the object target
+  
+  e=_.filter(source,{type:'income'})
+  target.income =_.sumBy(e,'amount');
+  
+  e=_.filter(source,{type:'expense'})
+  target.expenses =_.sumBy(e,'amount');  
 
+  target.balance=target.income-target.expenses;
+
+  //Code to get the whole amount of expenses, incomes and the balance, to input in the object  byCategories and later in the object target
+  
+  target.byCategories={};  
+  
+  e=_.filter(source,{category:'Restaurants'})
+  target.byCategories.Restaurants =(_.sumBy(e,'amount'))*-1; 
+  
+  e=_.filter(source,{category:'Income'})
+  target.byCategories.Income =_.sumBy(e,'amount'); 
+
+  e=_.filter(source,{category:'Groceries'})
+  target.byCategories.Groceries =(_.sumBy(e,'amount'))*-1; 
+    
+  e=_.filter(source,{category:'Rent'})
+  target.byCategories.Rent =_.sumBy(e,'amount')*-1; 
+ 
   return target; 
 })
 
@@ -96,14 +87,18 @@ $t.answer(2, async () => {
     // 2. Get text for every id: $source.getText(id)
     // 3. Return array of texts
     
-    // arrays of the texts
-    let ar1=[];
-    let ar2=[];
-    ar1=$source.getIds();
-    ar2=$source.getText();
-
-    console.log(ar1);
-    console.log(ar2);
-    console.log($source.getAnswer());
-    return 
+    async function fetchingText (){
+      try {
+        let text=[];
+        const id = (await $source.getIds());
+        for (let i = 0; i< id.length; i++) {
+        let j = await $source.getText(id[i]);
+        text.push(j);
+        }
+        return text; 
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    return fetchingText();
 })
